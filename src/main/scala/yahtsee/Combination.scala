@@ -10,6 +10,9 @@ import Dice.Dice
 
 object Roll {
   type Roll = (Dice,Dice,Dice,Dice,Dice)
+  def getIterator(r: Roll) = r.productIterator.map(_.asInstanceOf[Dice.Value])
+  def count(r: Roll, d: Dice) = getIterator(r).filter(d2 =>  (d2 == d)).toList.length
+  def count(r: Roll) = getIterator(r).foldLeft(Map[Dice,Int]())((m,d:Dice) => m ++ List(d -> (m.getOrElse(d,0) + 1)))
 }
 
 import Roll.Roll
@@ -29,6 +32,7 @@ object Combination {
   type Points = Int
 
   def getPoints(c: Combination, r:Roll) : Points = c match {
-    case Upper(d) => { r.productIterator.map(_.asInstanceOf[Dice.Value]).filter(d2 =>  (d2 == d)).toList.length * Dice.getValue(d) }
+    case Upper(d) => Roll.count(r, d) * Dice.getValue(d)
+//    case ThreeOfAKind => Roll.count()
   }
 }
