@@ -14,7 +14,8 @@ object Roll {
   def count(r: Roll, d: Dice) = getIterator(r).filter(d2 =>  (d2 == d)).toList.length
   def count(r: Roll) = getIterator(r).foldLeft(Map[Dice,Int]())((m,d:Dice) => m ++ List(d -> (m.getOrElse(d,0) + 1)))
   def maxCount(r: Roll) = count(r).values.foldLeft(0)(Math.max)
-  def sum(r: Roll) = getIterator(r).map( Dice.getValue(_)).foldLeft(0)(_ + _)
+  def values(r:Roll) = getIterator(r).map( Dice.getValue(_))
+  def sum(r: Roll) = values(r).foldLeft(0)(_ + _)
 }
 
 import Roll.Roll
@@ -34,10 +35,17 @@ object Combination {
   type Points = Int
 
   def ofAKind(r: Roll, n:Int) = if (Roll.maxCount(r) >= n ) Roll.sum(r) else 0
+  def increasing(l:List[Int]) = (l.tail zip l.dropRight(1)).foldLeft(true)((a,p) => a && (p._1-p._2) == 1)
 
   def getPoints(c: Combination, r:Roll) : Points = c match {
     case Upper(d) => Roll.count(r, d) * Dice.getValue(d)
     case ThreeOfAKind => ofAKind(r, 3)
     case FourOfAKind => ofAKind(r, 4)
+    case FullHouse => if (Roll.count(r).values.toList.sorted == List(2,3)) 25 else 0
+    case SmallStraight => { val l = Roll.values(r).toList.sorted
+      if (increasing(l.tail) || increasing(l.dropRight(1))) 30 else 0
+    }
+    case FullStraight => if (increasing(Roll.values(r).toList.sorted)) 40 else 0
+
   }
 }

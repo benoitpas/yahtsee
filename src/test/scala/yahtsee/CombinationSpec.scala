@@ -47,6 +47,36 @@ class CombinationSpec extends FunSpec {
         assert(Combination.getPoints(FourOfAKind, r3) === 1+4+4+4+4)
     }
 
-  
+    it("FullHouse() should be 25") {
+        assert(Combination.getPoints(FullHouse, r2) === 25)
+    }
+
+    it("FullHouse() should be 0") {
+        assert(Combination.getPoints(FullHouse, r3) === 0)
+    }
+
+    it("SmallStraight() should be 0") {
+        assert(Combination.getPoints(SmallStraight, r3) === 0)
+    }
+
+    val r4 = (Four, Five, Three, Six,One)
+    it("SmallStraight() should be 30 (1)") {
+        assert(Combination.getPoints(SmallStraight, r4) === 30)
+    }
+
+    val r5 = (Two, One, Three, Four,Six)
+    it("SmallStraight() should be 30 (2)") {
+        assert(Combination.getPoints(SmallStraight, r5) === 30)
+    }
+
+    it("FullStraight() should be 0") {
+        assert(Combination.getPoints(FullStraight, r5) === 0)
+    }
+
+    val r6 = (Two, One, Three, Four,Five)
+    it("FullStraight() should be 40") {
+        assert(Combination.getPoints(FullStraight, r6) === 40)
+    }
+
   }
 }
