@@ -46,6 +46,7 @@ object Combination {
       if (increasing(l.tail) || increasing(l.dropRight(1))) 30 else 0
     }
     case FullStraight => if (increasing(Roll.values(r).toList.sorted)) 40 else 0
+    case Chance => Roll.sum(r)
 
   }
 }

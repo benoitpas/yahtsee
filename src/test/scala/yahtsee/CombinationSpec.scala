@@ -78,5 +78,10 @@ class CombinationSpec extends FunSpec {
         assert(Combination.getPoints(FullStraight, r6) === 40)
     }
 
+    it("Chance() should be 19") {
+        assert(Combination.getPoints(Chance, r4) === 4+5+3+6+1)
+    }
+
+
   }
 }
