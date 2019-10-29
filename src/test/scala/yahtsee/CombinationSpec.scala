@@ -82,6 +82,17 @@ class CombinationSpec extends FunSpec {
         assert(Combination.getPoints(Chance, r4) === 4+5+3+6+1)
     }
 
+    it("Yahtsee() should be 0") {
+        assert(Combination.getPoints(Yahtsee, r4) === 0)
+    }
+
+    val r7 = (Four, Four, Four, Four,Four)
+    it("Yahtsee() should be 50") {
+        assert(Combination.getPoints(Yahtsee, r7) === 50)
+    }
+
+
+
 
   }
 }

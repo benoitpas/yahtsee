@@ -47,6 +47,7 @@ object Combination {
     }
     case FullStraight => if (increasing(Roll.values(r).toList.sorted)) 40 else 0
     case Chance => Roll.sum(r)
+    case Yahtsee => if (Roll.maxCount(r) == 5) 50 else 0
 
   }
 }
