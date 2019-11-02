@@ -23,5 +23,19 @@ class RandomGenSpec extends FunSpec {
         it("Third int should be 1033096058") {
             assert(r3.value._2 === 1033096058)
         }
+
+        import Dice._
+        val e1 = (Five,Six,Two,Five,Six)
+        it("First roll should be " + e1 ) {
+            val r = RandomGen.nextRoll.run(s).value._2
+            assert( r === e1)
+        }
+
+        val e2 = (Five,Six,Six,Two,Six)
+        it("Second roll should be " + e2 ) {
+            val r = RandomGen.nextRoll2.run(s).value._2
+            assert( r === e2)
+        }
+
     }
 }

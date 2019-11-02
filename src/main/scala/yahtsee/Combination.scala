@@ -3,7 +3,7 @@ package yahtsee
 object Dice extends Enumeration {
   type Dice = Value
   val One, Two, Three, Four, Five, Six = Value
-  def getValue(d:Dice) = d.id + 1
+  def getValue(d: Dice) = d.id + 1
 }
 
 import Dice.Dice
