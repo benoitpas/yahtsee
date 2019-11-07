@@ -90,9 +90,5 @@ class CombinationSpec extends FunSpec {
     it("Yahtsee() should be 50") {
         assert(Combination.getPoints(Yahtsee, r7) === 50)
     }
-
-
-
-
   }
 }
