@@ -21,5 +21,14 @@ class InteractionSpec extends FunSpec {
 
             assert(Interaction.readIntList(io).attempt.unsafeRunSync.isLeft)
         }
+
+        it("return an empty list for an empty string") {
+            def io  = IO[String] {
+                ""
+            }
+
+            assert(Interaction.readIntList(io).unsafeRunSync == List())
+        }
+
     }
 }
