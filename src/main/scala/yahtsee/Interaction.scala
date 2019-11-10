@@ -15,7 +15,9 @@ object Interaction {
         case _ => l.split(",").map(_.toInt).toList
     }
 
-    def generateRoll(s:Seed) = {
+
+    // Simple unpure implementation
+    def generateRoll(s:Seed) = IO {
         val r1 = RandomGen.nextRoll.run(s).value
         println(r1._2)
         val l1 = readIntList().unsafeRunSync()
@@ -27,6 +29,7 @@ object Interaction {
         r3
     }
 
+    // flatmap on the state 'Seed' monad
     import Roll.Roll
     def generateRoll2(s1:Seed) : IO[(Seed,Roll)] = {
         val r1 = RandomGen.nextRoll.run(s1).value
@@ -48,63 +51,26 @@ object Interaction {
         )
     }
 
-    
-    /*
-    import cats.mtl.MonadState
-    type MonadStateSeed[F[_]] = MonadState[F, Seed]
+    // trying to use StateT monad transformer to mix IO and Seed monads
+    def request(r: Roll, seed: Seed): IO[(Seed,Roll)] = 
+        for {
+            _ <- IO {println(r) }
+            l <- readIntList()
+        } yield RandomGen.updateRoll(r,l).run(seed).value 
 
-    import cats.Eval
-    import cats.Monad 
-    import cats.data.State
-    import cats.effect.LiftIO
-    import Roll.Roll
 
-    type Env = String
-    type Request = String
-    type Response = String
-    type Config = String
+    import cats.data.StateT
+    def requestWithState(r: Roll): StateT[IO, Seed, (Seed,Roll)] = for {
+        seed <- StateT.get[IO, Seed]
+        resp <- StateT.liftF(request(r, seed))
+        _ <- StateT.modify[IO, Seed](_ => resp._1)
+    } yield resp
 
-def initialEnv: Env = ???
-
-def request(r: Request, env: Env): IO[Response] = ???
-    type Result = List[Response]
-
-def updateEnv(r: Response, env: Env): Env = ???
-
-def requests: List[Request] = ???
-
-def newServiceCall(c: Config, req: Request, e: Env): IO[Response] = ???
-
-type MonadStateEnv[F[_]] = MonadState[F, Env]
-// defined type alias MonadStateEnv
-
-def requestWithState[F[_]: Monad: MonadStateEnv: LiftIO](c: Config, req: Request): F[Response] = for {
-  env <- MonadState[F, Env].get
-  response <- newServiceCall(c, req, env).to[F]
-  _ <- MonadState[F, Env].modify(updateEnv(response, _))
-} yield response
-// requestWithState: [F[_]](c: Config, req: Request)(implicit evidence$1: cats.Monad[F], implicit evidence$2: MonadStateEnv[F], implicit evidence$3: cats.effect.LiftIO[F])F[Response]
-
-*/
-    /*
-    def getNewRoll(s: Seed, r: Roll): IO[(Roll,Seed)] = ???
-    def updateEnv(s: Seed,r: Roll): Seed = s
-
-    def updatedRoll[F[_]: Monad: MonadStateSeed: LiftIO](r: Roll): F[Roll] = for {
-        seed <- MonadState[F, Seed].get
-        reponse <- getNewRoll(seed, r).to[F]
-        _ <- MonadState[F, Seed].modify(updateEnv(_,reponse.s))
-    } yield reponse._1*/
-/*
-    def generateRoll() {
-        val roll = RandomGen.nextRoll
-
-        for (
-            r <- roll;
-            l <- readIntList();
-            r2 <- newRoll(r,l);
-            l2 <- readIntList();
-            r3 <- newRoll(r2,l2))
-            yield r3
-    }*/
+    def generateRoll3(s:Seed) = {
+        val r = RandomGen.nextRoll.run(Seed()).value
+        (for {
+            resp1 <- requestWithState(r._2)
+            resp2 <- requestWithState(resp1._2)
+         } yield resp2).run(r._1)
+    }
 }
