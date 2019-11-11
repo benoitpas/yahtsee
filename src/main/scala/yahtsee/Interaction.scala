@@ -69,6 +69,7 @@ object Interaction {
     def generateRoll3(s:Seed) = {
         val r = RandomGen.nextRoll.run(Seed()).value
         (for {
+            _ <- StateT.modify[IO,Seed](_ => r._1)
             resp1 <- requestWithState(r._2)
             resp2 <- requestWithState(resp1._2)
          } yield resp2).run(r._1)
