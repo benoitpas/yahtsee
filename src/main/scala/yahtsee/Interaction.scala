@@ -29,7 +29,7 @@ object Interaction {
         r3
     }
 
-    // flatmap on the state 'Seed' monad
+    // flatmap on the IO monad and pass the state throught (pure)
     import Roll.Roll
     def generateRoll2(s1:Seed) : IO[(Seed,Roll)] = {
         val r1 = RandomGen.nextRoll.run(s1).value
@@ -51,7 +51,11 @@ object Interaction {
         )
     }
 
-    // trying to use StateT monad transformer to mix IO and Seed monads
+    // trying to use StateT monad transformer to mix IO and Seed monads (pure)
+    def firstRoll(seed: Seed) : IO[(Seed,Roll)] = IO {
+        RandomGen.nextRoll.run(Seed()).value
+    }
+
     def request(r: Roll, seed: Seed): IO[(Seed,Roll)] = 
         for {
             _ <- IO {println(r) }
@@ -67,11 +71,12 @@ object Interaction {
     } yield resp
 
     def generateRoll3(s:Seed) = {
-        val r = RandomGen.nextRoll.run(Seed()).value
         (for {
-            _ <- StateT.modify[IO,Seed](_ => r._1)
-            resp1 <- requestWithState(r._2)
+            seed <- StateT.get[IO, Seed]
+            resp1 <- StateT.liftF(firstRoll(seed))
+            _ <- StateT.modify[IO,Seed](_ => resp1._1)
             resp2 <- requestWithState(resp1._2)
-         } yield resp2).run(r._1)
+            resp3 <- requestWithState(resp2._2)
+         } yield resp3).run(s)
     }
 }
