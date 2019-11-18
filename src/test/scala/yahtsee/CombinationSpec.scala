@@ -69,6 +69,11 @@ class CombinationSpec extends FunSpec {
         assert(Combination.getPoints(SmallStraight, r5) === 30)
     }
 
+    val r5b = (Two, One, Three, One,Two)
+    it("SmallStraight() should be 0 (2)") {
+        assert(Combination.getPoints(SmallStraight, r5b) === 0)
+    }
+
     it("FullStraight() should be 0") {
         assert(Combination.getPoints(FullStraight, r5) === 0)
     }
