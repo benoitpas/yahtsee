@@ -70,13 +70,13 @@ object Interaction {
         _ <- StateT.modify[IO, Seed](_ => resp._1)
     } yield resp
 
-    def generateRoll3(s:Seed) = {
+    def generateRoll3 = {
         (for {
             seed <- StateT.get[IO, Seed]
             resp1 <- StateT.liftF(firstRoll(seed))
             _ <- StateT.modify[IO,Seed](_ => resp1._1)
             resp2 <- requestWithState(resp1._2)
             resp3 <- requestWithState(resp2._2)
-         } yield resp3).run(s)
+         } yield resp3)
     }
 }
